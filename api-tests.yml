@@ -1,0 +1,41 @@
+name: API Tests (Newman)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  newman-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Newman
+        run: npm install -g newman
+
+      - name: Run Positive Collection
+        run: |
+          mkdir -p reports
+          newman run postman/Collab-MVP.postman_collection.json \
+            -e postman/Collab-MVP.local.postman_environment.json \
+            --reporters cli,junit \
+            --reporter-junit-export reports/positive.xml
+
+      - name: Run Negative Collection
+        run: |
+          newman run postman/Collab-MVP-negative-tests.postman_collection.json \
+            -e postman/Collab-MVP.local.postman_environment.json \
+            --reporters cli,junit \
+            --reporter-junit-export reports/negative.xml
+
+      - name: Upload Test Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-reports
+          path: reports/*.xml
