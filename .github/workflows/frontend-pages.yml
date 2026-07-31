@@ -1,0 +1,4 @@
+cd C:/Users/POSCOFUTUREM/collab-mvp
+git add .github/workflows/frontend-pages.yml
+git commit -m "ci: add frontend github pages workflow"
+git push
